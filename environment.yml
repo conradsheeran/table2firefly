@@ -1,0 +1,9 @@
+name: table2firefly
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+  - pandas
+  - pandas-stubs==2.2.3.250308
+  - openpyxl
+  - openai

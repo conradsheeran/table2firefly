@@ -12,3 +12,4 @@ for file_path in excel_files:
     if success:
         processor.copy_csv_files()
         processor.clean_csv_files()
+        processor.add_currency_column()

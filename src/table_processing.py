@@ -113,3 +113,42 @@ class TableProcessing:
                     df.to_csv(csv_file, index=False, encoding='utf-8-sig')
             except Exception as e:
                 print(f"清理 '{csv_file.name}' 文件时发生错误: {e}")
+
+    def add_currency_column(self, column_name: str = '币种', value: str = 'CNY', position: int = 5):
+        """
+        为输出目录中的所有 CSV 文件添加一个新列
+
+        Args:
+            column_name (str): 要添加的列的名称。默认为 '币种'
+            value (str): 要为该列填充的默认值。默认为 'CNY'
+            position (int): 新列的目标位置。默认为 5
+        """
+        csv_files = list(self.output_dir.glob('*.csv'))
+        for csv_file in csv_files:
+            try:
+                df = pd.read_csv(csv_file, encoding='utf-8-sig', dtype=str)
+
+                target_pos = max(0, position)
+                target_pos = min(target_pos, len(df.columns))
+
+                if column_name in df.columns:
+                    current_pos = df.columns.get_loc(column_name)
+                    if current_pos != target_pos:
+                        col_series = df[column_name].copy()
+                        df.drop(columns=[column_name], inplace=True)
+                        adjusted_target_pos = min(target_pos, len(df.columns))
+                        df.insert(loc=adjusted_target_pos, column=column_name, value=col_series)
+                    else:
+                        pass
+                else:
+                    if df.shape[0] > 0:
+                        df.insert(loc=target_pos, column=column_name, value=value)
+                    else:
+                        cols = df.columns.tolist()
+                        cols.insert(target_pos, column_name)
+                        df = pd.DataFrame(columns=cols)
+
+                df.to_csv(csv_file, index=False, encoding='utf-8-sig')
+            except Exception as e:
+                print(f"'{csv_file.name}' 添加列时发生错误: {e}")
+
