@@ -1,8 +1,6 @@
 import pandas as pd
-import os
 from openai import OpenAI
 from typing import List
-
 
 class BillClassifier:
     """
@@ -158,16 +156,9 @@ class BillClassifier:
 #
 #     if not DEEPSEEK_API_KEY:
 #         print("错误：环境变量 'DEEPSEEK_API_KEY' 未设置。")
-#         print("请先设置环境变量后再运行脚本。")
 #     else:
 #         try:
-#             print("正在初始化账单分类器...")
 #             classifier = BillClassifier(api_key=DEEPSEEK_API_KEY)
-#             print("分类器初始化成功。")
-#
-#             print(f"开始处理文件: {input_file}...")
-#             classifier.process_bill(input_file, output_file)
-#             print(f"处理完成！结果已保存到: {output_file}")
-#
+#             classifier.process_bill(input_file, output_file)#
 #         except (ValueError, FileNotFoundError, Exception) as e:
 #             print(f"处理过程中发生错误: {e}")
