@@ -28,7 +28,7 @@ class TableProcessing:
 
     def convert_excel_to_csv(self, filename: str) -> bool:
         """
-        将单个Excel文件转换为CSV格式，并进行表头重命名和数据清理。
+        将单个 odf 文件转换为CSV格式，并进行表头重命名和数据清理。
 
         Args:
             filename (str): 要转换的Excel文件名（包含扩展名）。
@@ -42,7 +42,10 @@ class TableProcessing:
             return False
 
         try:
-            df = pd.read_excel(excel_file_path)
+            if excel_file_path.suffix == ".ods":
+                df = pd.read_excel(excel_file_path, engine="odf")
+            else:
+                df = pd.read_excel(excel_file_path)
 
             header_mapping = {
                 '交易时间': '交易时间', '交易类型': '交易分类', '交易对方': '交易对方',
@@ -152,3 +155,29 @@ class TableProcessing:
             except Exception as e:
                 print(f"'{csv_file.name}' 添加列时发生错误: {e}")
 
+    def format_amount_by_type(self) -> None:
+        """
+        根据“收/支”列格式化“金额”列
+        """
+        csv_files = list(self.output_dir.glob('*.csv'))
+
+        for csv_file in csv_files:
+            try:
+                df = pd.read_csv(csv_file, encoding='utf-8-sig', dtype=str)
+
+                # 检查必要的列是否存在，如果不存在则跳过该文件
+                if '收/支' not in df.columns or '金额' not in df.columns:
+                    print(f"警告: 文件 '{csv_file.name}' 缺少 '收/支' 或 '金额' 列")
+                    continue
+
+                df['金额'] = df['金额'].fillna('').astype(str).str.lstrip('-')
+
+                # 筛选出“收/支”为“支出”且金额不为空的行
+                is_expense = df['收/支'] == '支出'
+                is_amount_present = df['金额'].str.strip() != ''
+                target_mask = is_expense & is_amount_present
+                df.loc[target_mask, '金额'] = '-' + df.loc[target_mask, '金额']
+                df.to_csv(csv_file, index=False, encoding='utf-8-sig')
+
+            except Exception as e:
+                print(f"格式化 '{csv_file.name}' 金额时，发生错误: {e}")

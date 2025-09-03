@@ -1,15 +1,15 @@
 import os
 from pathlib import Path
 from table_processing import TableProcessing
-from bill_classifier import BillClassifier
+from bill_classifier_gemini import BillClassifier
 
 WORK_DIR = '../input'
 TMP_DIR = '../tmp'
 OUTPUT_DIR = '../output'
-DEEPSEEK_API_KEY = os.environ['DEEPSEEK_API_KEY']
+DEEPSEEK_API_KEY = os.environ['GEMINI_API_KEY']
 
 processor = TableProcessing(working_directory=WORK_DIR, output_directory=TMP_DIR)
-excel_files = [f for f in Path(WORK_DIR).iterdir() if f.is_file() and f.suffix in ['.xlsx']]
+excel_files = [f for f in Path(WORK_DIR).iterdir() if f.is_file() and f.suffix in ['.xlsx','.ods']]
 
 for file_path in excel_files:
     success = processor.convert_excel_to_csv(file_path.name)
@@ -17,6 +17,11 @@ for file_path in excel_files:
         processor.copy_csv_files()
         processor.clean_csv_files()
         processor.add_currency_column()
+        processor.format_amount_by_type()
+# processor.copy_csv_files()
+# processor.clean_csv_files()
+# processor.add_currency_column()
+# processor.format_amount_by_type()
 
 csv_files = [f for f in Path(TMP_DIR).iterdir() if f.is_file() and f.suffix == '.csv']
 
