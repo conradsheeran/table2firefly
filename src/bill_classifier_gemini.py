@@ -16,7 +16,7 @@ class BillClassifier:
         初始化分类器。
 
         Args:
-            api_key (str): 用于访问 DeepSeek API 的密钥
+            api_key (str): 用于访问 Gemini API 的密钥
 
         Raises:
             ValueError: 如果未提供 API 密钥
