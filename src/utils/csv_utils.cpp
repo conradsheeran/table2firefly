@@ -1,6 +1,5 @@
 #include "utils/csv_utils.h"
 
-#include <csv2/reader.hpp>
 #include <csv2/writer.hpp>
 #include <filesystem>
 #include <stdexcept>
@@ -14,25 +13,24 @@ CSVUtils::CSVUtils(const std::string& input_file, const std::string& output_file
     if (!std::filesystem::exists(input_file_)) {
         throw std::invalid_argument("File does not exist.");
     }
-    read_file();
+    if (reader_.mmap(input_file_)) {
+        read_file();
+    } else {
+        throw std::runtime_error("Failed to mmap CSV file.");
+    }
 }
 
 int CSVUtils::read_file() {
     header.clear();
     data.clear();
-    csv2::Reader<csv2::delimiter<','>, csv2::first_row_is_header<true>, csv2::quote_character<'"'>> reader;
-    if (reader.mmap(input_file_)) {
-        const auto& csv_header = reader.header();
-        for (const auto& col : csv_header) {
-            std::string col_name;
-            col.read_value(col_name);
-            header.push_back(col_name);
-        }
-    } else {
-        throw std::runtime_error("Failed to read CSV file.");
+    const auto& csv_header = reader_.header();
+    for (const auto& col : csv_header) {
+        std::string col_name;
+        col.read_value(col_name);
+        header.push_back(col_name);
     }
 
-    for (const auto& row : reader) {
+    for (const auto& row : reader_) {
         std::vector<std::string> row_data;
         for (const auto& cell : row) {
             std::string cell_data;
@@ -54,6 +52,20 @@ int CSVUtils::delete_row(const std::string& columns_to_drop) {
                 row.erase(row.begin() + index);
             }
         }
+    }
+    return 0;
+}
+
+int CSVUtils::add_column_with_a_same_value(const int& index, const std::string& column_name, const std::string& value) {
+    if (index < 0 || index > static_cast<int>(header.size())) {
+        throw std::out_of_range("Index is out of range.");
+    }
+    header.insert(header.begin() + index, column_name);
+    for (auto& row : data) {
+        if (row.size() <= static_cast<size_t>(index)) {
+            row.resize(header.size(), "");
+        }
+        row.insert(row.begin() + index, value);
     }
     return 0;
 }

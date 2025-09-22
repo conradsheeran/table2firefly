@@ -1,9 +1,9 @@
 #include "table2firefly/table_processing.h"
 
-#include <csv2/reader.hpp>
 #include <filesystem>
 #include <stdexcept>
-#include <vector>
+
+#include "utils/csv_utils.h"
 
 TableProcessing::TableProcessing(const std::string& input_directory, const std::string& output_directory, const std::string& working_directory):
                 input_directory_(input_directory),
@@ -41,7 +41,7 @@ int TableProcessing::copy_csv_files() {
 
 int TableProcessing::clear_csv_files() {
     std::vector<std::string> csv_files;
-    std::vector<std::string> columns_to_drop = {"备注", "对方帐号"};
+    std::vector<std::string> columns_to_drop = {"备注", "商户单号", "交易单号", "当前状态"};
 
     for (const auto& entry: std::filesystem::directory_iterator(working_directory_)) {
         if (entry.path().extension() == ".csv") {
@@ -50,7 +50,27 @@ int TableProcessing::clear_csv_files() {
     }
 
     for (const auto& csv_file : csv_files) {
-        //todo: 使用 CSVUtils 处理每个文件
+        CSVUtils csv_utils(csv_file, csv_file);
+        for (const auto& column : columns_to_drop) {
+            csv_utils.delete_row(column);
+        }
+    }
+
+    return 0;
+}
+
+int TableProcessing::add_currency_column(const int& index, const std::string& currency) {
+    std::vector<std::string> csv_files;
+
+    for (const auto& entry: std::filesystem::directory_iterator(working_directory_)) {
+        if (entry.path().extension() == ".csv") {
+            csv_files.push_back(entry.path().string());
+        }
+    }
+
+    for (const auto& csv_file : csv_files) {
+        CSVUtils csv_utils(csv_file, csv_file);
+        csv_utils.add_column_with_a_same_value(index, "币种", currency);
     }
 
     return 0;

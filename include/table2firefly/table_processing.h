@@ -13,6 +13,7 @@ class TableProcessing {
     TableProcessing(const std::string& input_directory, const std::string& output_directory, const std::string& working_directory);
     int copy_csv_files();
     int clear_csv_files();
+    int add_currency_column(const int& index, const std::string& currency);
 };
 
 #endif //TABLE_PROCESSING_H

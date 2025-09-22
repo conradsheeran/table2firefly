@@ -1,13 +1,17 @@
 #include "utils/csv_utils.h"
+#include "table2firefly/table_processing.h"
 
 #include <iostream>
 #include <vector>
 #include <string>
 
 int main() {
-    std::vector<std::string> data2drop = {"交易单号", "商户单号", "备注", "当前状态"};
-    CSVUtils csv_utils("/home/user/dev/CLionProjects/table2firefly/test/input/test.csv", "/home/user/dev/CLionProjects/table2firefly/test/output/test.csv");
-    for (const auto& row_data : data2drop) {
-        csv_utils.delete_row(row_data);
-    }
+    std::string input_path = "/home/user/dev/CLionProjects/table2firefly/test/input";
+    std::string output_file = "/home/user/dev/CLionProjects/table2firefly/test/output";
+    std::string working_directory = "/home/user/dev/CLionProjects/table2firefly/test/tmp";
+
+    TableProcessing table_processing(input_path, output_file, working_directory);
+    table_processing.copy_csv_files();
+    table_processing.clear_csv_files();
+    table_processing.add_currency_column(5, "CNY");
 }
