@@ -105,7 +105,7 @@ inline size_t make_offset_page_aligned(size_t offset) noexcept {
 #define WIN32_LEAN_AND_MEAN
 #endif // WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#else  // ifdef _WIN32
+#else // ifdef _WIN32
 #define INVALID_HANDLE_VALUE -1
 #endif // ifdef _WIN32
 
@@ -1650,7 +1650,7 @@ template <class delimiter = delimiter<','>, class quote_character = quote_charac
           class trim_policy = trim_policy::trim_whitespace>
 class Reader {
 #if __CSV2_HAS_MMAN_H__
-  mio::mmap_source mmap_;       // mmap source
+  mio::mmap_source mmap_; // mmap source
 #endif
   const char *buffer_{nullptr}; // pointer to memory-mapped data
   size_t buffer_size_{0};       // mapped length of buffer
@@ -1678,7 +1678,6 @@ public:
     return buffer_size_ > 0;
   }
 
-
   // Use this if you have the CSV contents
   // in an std::string_view already
 #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
@@ -1688,7 +1687,6 @@ public:
     return buffer_size_ > 0;
   }
 #endif
-
 
   class RowIterator;
   class Row;
@@ -1749,8 +1747,8 @@ public:
   public:
     // address of row
     const char *address() const { return buffer_; }
-	// returns the char length of the row
-	size_t length() const { return end_ - start_; }
+    // returns the char length of the row
+    size_t length() const { return end_ - start_; }
 
     // Returns the raw_value of the row
     template <typename Container> void read_raw_value(Container &result) const {
@@ -1903,24 +1901,20 @@ public:
 
   /**
    * @returns The number of rows (excluding the header)
-  */
+   */
   size_t rows(bool ignore_empty_lines = false) const {
     size_t result{0};
     if (!buffer_ || buffer_size_ == 0)
       return result;
-    
+
     // Count the first row if not header
-    if (not first_row_is_header::value
-        and (not ignore_empty_lines
-        or *(static_cast<const char*>(buffer_)) != '\r'))
+    if (not first_row_is_header::value and
+        (not ignore_empty_lines or *(static_cast<const char *>(buffer_)) != '\r'))
       ++result;
 
-    for (const char *p = buffer_
-        ; (p = static_cast<const char *>(memchr(p, '\n', (buffer_ + buffer_size_) - p)))
-        ; ++p) {
-      if (ignore_empty_lines
-          and (p >= buffer_ + buffer_size_ - 1
-          or *(p + 1) == '\r'))
+    for (const char *p = buffer_;
+         (p = static_cast<const char *>(memchr(p, '\n', (buffer_ + buffer_size_) - p))); ++p) {
+      if (ignore_empty_lines and (p >= buffer_ + buffer_size_ - 1 or *(p + 1) == '\r'))
         continue;
       ++result;
     }

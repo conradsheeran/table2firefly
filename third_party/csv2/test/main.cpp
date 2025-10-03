@@ -54,7 +54,7 @@ TEST_CASE("Parse the most basic of CSV buffers ignoring the first row" * test_su
   const std::vector<std::string> expected_header{"a", "b", "c"};
   const auto header = csv.header();
   size_t h = 0;
-  for (const auto cell: header) {
+  for (const auto cell : header) {
     std::string value;
     cell.read_value(value);
     REQUIRE(value == expected_header[h++]);
@@ -95,7 +95,8 @@ TEST_CASE("Parse the most basic of CSV headers" * test_suite("Reader")) {
 
 TEST_CASE("Parse the most basic of CSV buffers with ', ' delimiter using initial space" *
           test_suite("Reader")) {
-  Reader<delimiter<','>, quote_character<'"'>, first_row_is_header<false>, trim_policy::no_trimming> csv;
+  Reader<delimiter<','>, quote_character<'"'>, first_row_is_header<false>, trim_policy::no_trimming>
+      csv;
   csv.mmap("inputs/test_02.csv");
 
   const std::vector<std::string> expected_cells{"a", " b", " c", "1", " 2", " 3", "4", " 5", " 6"};
@@ -117,7 +118,9 @@ TEST_CASE("Parse the most basic of CSV buffers with ', ' delimiter using initial
 TEST_CASE("Parse the most basic of CSV buffers with ', ' delimiter using initial space - Trimming "
           "enabled" *
           test_suite("Reader")) {
-  Reader<delimiter<','>, quote_character<'"'>, first_row_is_header<false>, trim_policy::trim_whitespace> csv;
+  Reader<delimiter<','>, quote_character<'"'>, first_row_is_header<false>,
+         trim_policy::trim_whitespace>
+      csv;
   csv.mmap("inputs/test_02.csv");
 
   const std::vector<std::string> expected_cells{"a", "b", "c", "1", "2", "3", "4", "5", "6"};
@@ -141,7 +144,7 @@ TEST_CASE("Parse headers with double quotes" * test_suite("Reader")) {
   csv.mmap("inputs/test_06.csv");
 
   const std::vector<std::string> expected_cells{"\"Free trip to A,B\"", "\"5.89\"",
-                                          "\"Special rate \"1.79\"\""};
+                                                "\"Special rate \"1.79\"\""};
 
   size_t rows{0}, cells{0};
   for (auto row : csv) {
@@ -162,7 +165,7 @@ TEST_CASE("Parse headers with pairs of single-quotes" * test_suite("Reader")) {
   csv.mmap("inputs/test_07.csv");
 
   const std::vector<std::string> expected_cells{"''Free trip to A,B''", "''5.89''",
-                                          "'Special rate 1.79'"};
+                                                "'Special rate 1.79'"};
 
   size_t rows{0}, cells{0};
   for (auto row : csv) {
@@ -245,7 +248,7 @@ TEST_CASE("Parse the most basic of CSV buffers - Space delimiter" * test_suite("
   csv.mmap("inputs/test_09.csv");
 
   const std::vector<std::string> expected_cells{"first_name", "last_name", "Eric",
-                                          "Idle",       "John",      "Cleese"};
+                                                "Idle",       "John",      "Cleese"};
 
   size_t rows{0}, cells{0};
   for (auto row : csv) {
@@ -266,7 +269,7 @@ TEST_CASE("Parse CSV with empty lines" * test_suite("Reader")) {
   csv.mmap("inputs/empty_lines.csv");
 
   const std::vector<std::string> expected_cells{"a", "b", "c", "1", "2",  "3",  "4", "5",
-                                          "6", "7", "8", "9", "10", "11", "12"};
+                                                "6", "7", "8", "9", "10", "11", "12"};
 
   size_t rows{0}, cells{0};
   for (auto row : csv) {
@@ -284,7 +287,8 @@ TEST_CASE("Parse CSV with missing columns" * test_suite("Reader")) {
   Reader<delimiter<','>, quote_character<'"'>, first_row_is_header<false>> csv;
   csv.mmap("inputs/missing_columns.csv");
 
-  const std::vector<std::string> expected_cells{"a", "b", "c", "d", "1", "2", "", "4", "5", "6", "", "8"};
+  const std::vector<std::string> expected_cells{"a", "b", "c", "d", "1", "2",
+                                                "",  "4", "5", "6", "",  "8"};
 
   size_t rows{0}, cells{0};
   for (auto row : csv) {
@@ -348,7 +352,8 @@ TEST_CASE("Parse the most basic of CSV buffers with double quotes with embedded 
   const std::string buffer = "a,\"b,c\",d\n\"1,2,3\",\"4,5,6\", \"7,8,9\"";
   csv.parse(buffer);
 
-  const std::vector<std::string> expected_cells{"a", "\"b,c\"", "d", "\"1,2,3\"", "\"4,5,6\"", "\"7,8,9\""};
+  const std::vector<std::string> expected_cells{"a",         "\"b,c\"",   "d",
+                                                "\"1,2,3\"", "\"4,5,6\"", "\"7,8,9\""};
 
   size_t rows{0}, cells{0};
   for (auto row : csv) {

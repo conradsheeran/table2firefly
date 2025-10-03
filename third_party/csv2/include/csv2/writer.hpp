@@ -15,9 +15,7 @@ template <class delimiter = delimiter<','>, typename Stream = std::ofstream> cla
 public:
   Writer(Stream &stream) : stream_(stream) {}
 
-  ~Writer() {
-    stream_.close();
-  }
+  ~Writer() { stream_.close(); }
 
   template <typename Container> void write_row(Container &&row) {
     const auto &strings = std::forward<Container>(row);

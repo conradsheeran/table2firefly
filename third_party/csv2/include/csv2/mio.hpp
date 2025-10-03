@@ -603,25 +603,43 @@ struct char_type_helper {
   using type = typename C::value_type;
 };
 
-template <class T> struct char_type { using type = typename char_type_helper<T>::type; };
+template <class T> struct char_type {
+  using type = typename char_type_helper<T>::type;
+};
 
 // TODO: can we avoid this brute force approach?
-template <> struct char_type<char *> { using type = char; };
+template <> struct char_type<char *> {
+  using type = char;
+};
 
-template <> struct char_type<const char *> { using type = char; };
+template <> struct char_type<const char *> {
+  using type = char;
+};
 
-template <size_t N> struct char_type<char[N]> { using type = char; };
+template <size_t N> struct char_type<char[N]> {
+  using type = char;
+};
 
-template <size_t N> struct char_type<const char[N]> { using type = char; };
+template <size_t N> struct char_type<const char[N]> {
+  using type = char;
+};
 
 #ifdef _WIN32
-template <> struct char_type<wchar_t *> { using type = wchar_t; };
+template <> struct char_type<wchar_t *> {
+  using type = wchar_t;
+};
 
-template <> struct char_type<const wchar_t *> { using type = wchar_t; };
+template <> struct char_type<const wchar_t *> {
+  using type = wchar_t;
+};
 
-template <size_t N> struct char_type<wchar_t[N]> { using type = wchar_t; };
+template <size_t N> struct char_type<wchar_t[N]> {
+  using type = wchar_t;
+};
 
-template <size_t N> struct char_type<const wchar_t[N]> { using type = wchar_t; };
+template <size_t N> struct char_type<const wchar_t[N]> {
+  using type = wchar_t;
+};
 #endif // _WIN32
 
 template <typename CharT, typename S> struct is_c_str_helper {

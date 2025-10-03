@@ -1,4 +1,3 @@
-
 # amalgamate.py - Amalgamate C source and header files
 
 Origin: https://bitbucket.org/erikedlund/amalgamate
@@ -53,14 +52,14 @@ Python v.2.7.0 or higher is required.
         amalgamate.py [-v] -c path/to/config.json -s path/to/source/dir \
                 [-p path/to/prologue.(c|h)]
 
- * The `-c, --config` option should specify the path to a JSON config file which
-   lists the source files, include paths and where to write the resulting
-   amalgamation. Have a look at `test/source.c.json` and `test/include.h.json`
-   to see two examples.
+* The `-c, --config` option should specify the path to a JSON config file which
+  lists the source files, include paths and where to write the resulting
+  amalgamation. Have a look at `test/source.c.json` and `test/include.h.json`
+  to see two examples.
 
- * The `-s, --source` option should specify the path to the source directory.
-   This is useful for supporting separate source and build directories.
+* The `-s, --source` option should specify the path to the source directory.
+  This is useful for supporting separate source and build directories.
 
- * The `-p, --prologue` option should specify the path to a file which will be
-   added to the beginning of the amalgamation. It is optional.
+* The `-p, --prologue` option should specify the path to a file which will be
+  added to the beginning of the amalgamation. It is optional.
 

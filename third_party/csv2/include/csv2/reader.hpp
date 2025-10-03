@@ -1,7 +1,9 @@
 
 #pragma once
 #include <cstring>
-#if __has_include("sys/mman.h") || __has_include(<sys/mman.h>) || __has_include("windows.h") || __has_include(<windows.h>)
+#if __has_include("sys/mman.h") ||                                                                 \
+                  __has_include(                                                                   \
+                      <sys/mman.h>) || __has_include("windows.h") || __has_include(<windows.h>)
 #define __CSV2_HAS_MMAN_H__ 1
 #include <csv2/mio.hpp>
 #endif
@@ -9,7 +11,7 @@
 #include <istream>
 #include <string>
 #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
-	#include <string_view>
+#include <string_view>
 #endif
 
 namespace csv2 {
@@ -18,16 +20,16 @@ template <class delimiter = delimiter<','>, class quote_character = quote_charac
           class first_row_is_header = first_row_is_header<true>,
           class trim_policy = trim_policy::trim_whitespace>
 class Reader {
-  #if __CSV2_HAS_MMAN_H__
-  mio::mmap_source mmap_;          // mmap source
-  #endif
-  const char *buffer_{nullptr};    // pointer to memory-mapped data
-  size_t buffer_size_{0};          // mapped length of buffer
-  size_t header_start_{0};         // start index of header (cache)
-  size_t header_end_{0};           // end index of header (cache)
+#if __CSV2_HAS_MMAN_H__
+  mio::mmap_source mmap_; // mmap source
+#endif
+  const char *buffer_{nullptr}; // pointer to memory-mapped data
+  size_t buffer_size_{0};       // mapped length of buffer
+  size_t header_start_{0};      // start index of header (cache)
+  size_t header_end_{0};        // end index of header (cache)
 
 public:
-  #if __CSV2_HAS_MMAN_H__
+#if __CSV2_HAS_MMAN_H__
   // Use this if you'd like to mmap the CSV file
   template <typename StringType> bool mmap(StringType &&filename) {
     mmap_ = mio::mmap_source(filename);
@@ -37,7 +39,7 @@ public:
     buffer_size_ = mmap_.mapped_length();
     return true;
   }
-  #endif
+#endif
 
   // Use this if you have the CSV contents
   // in an std::string already
@@ -47,9 +49,8 @@ public:
     return buffer_size_ > 0;
   }
 
-
   // Use this if you already have the CSV contents
-  // in a std::string_view 
+  // in a std::string_view
 #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
   bool parse_view(std::string_view sv) {
     buffer_ = sv.data();
@@ -57,7 +58,6 @@ public:
     return buffer_size_ > 0;
   }
 #endif
-
 
   class RowIterator;
   class Row;
@@ -72,14 +72,14 @@ public:
     friend class CellIterator;
 
   public:
-  
-	// returns a view on the cell's contents if C++17 available
-	#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
-      std::string_view read_view() const {
+// returns a view on the cell's contents if C++17 available
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+    std::string_view read_view() const {
       const auto new_start_end = trim_policy::trim(buffer_, start_, end_);
-      return std::string_view(buffer_ + new_start_end.first, new_start_end.second- new_start_end.first);
-      }
-	#endif
+      return std::string_view(buffer_ + new_start_end.first,
+                              new_start_end.second - new_start_end.first);
+    }
+#endif
     // Returns the raw_value of the cell without handling escaped
     // content, e.g., cell containing """foo""" will be returned
     // as is
@@ -118,8 +118,8 @@ public:
   public:
     // address of row
     const char *address() const { return buffer_; }
-	// returns the char length of the row
-	size_t length() const { return end_ - start_; }
+    // returns the char length of the row
+    size_t length() const { return end_ - start_; }
 
     // Returns the raw_value of the row
     template <typename Container> void read_raw_value(Container &result) const {
@@ -234,7 +234,8 @@ public:
       return end();
     if (first_row_is_header::value) {
       const auto header_indices = header_indices_();
-      return RowIterator(buffer_, buffer_size_, header_indices.second  > 0 ? header_indices.second + 1 : 0);
+      return RowIterator(buffer_, buffer_size_,
+                         header_indices.second > 0 ? header_indices.second + 1 : 0);
     } else {
       return RowIterator(buffer_, buffer_size_, 0);
     }
@@ -254,7 +255,6 @@ private:
   }
 
 public:
-
   Row header() const {
     size_t start = 0, end = 0;
     Row result;
@@ -272,24 +272,20 @@ public:
 
   /**
    * @returns The number of rows (excluding the header)
-  */
+   */
   size_t rows(bool ignore_empty_lines = false) const {
     size_t result{0};
     if (!buffer_ || buffer_size_ == 0)
       return result;
-    
+
     // Count the first row if not header
-    if (not first_row_is_header::value
-        and (not ignore_empty_lines
-        or *(static_cast<const char*>(buffer_)) != '\r'))
+    if (not first_row_is_header::value and
+        (not ignore_empty_lines or *(static_cast<const char *>(buffer_)) != '\r'))
       ++result;
 
-    for (const char *p = buffer_
-        ; (p = static_cast<const char *>(memchr(p, '\n', (buffer_ + buffer_size_) - p)))
-        ; ++p) {
-      if (ignore_empty_lines
-          and (p >= buffer_ + buffer_size_ - 1
-          or *(p + 1) == '\r'))
+    for (const char *p = buffer_;
+         (p = static_cast<const char *>(memchr(p, '\n', (buffer_ + buffer_size_) - p))); ++p) {
+      if (ignore_empty_lines and (p >= buffer_ + buffer_size_ - 1 or *(p + 1) == '\r'))
         continue;
       ++result;
     }
