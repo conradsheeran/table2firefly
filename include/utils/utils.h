@@ -2,11 +2,7 @@
 #define UTILS_H
 
 
-
-class utils {
-
-};
+class utils {};
 
 
-
-#endif //UTILS_H
+#endif // UTILS_H
